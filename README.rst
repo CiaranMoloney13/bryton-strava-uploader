@@ -8,7 +8,7 @@ to strava.com
 Windows binary:
 ---------------
 
-A windows exe can be found on the following link:
+A windows exe can be found at the following link:
 `<https://docs.google.com/file/d/0B5xey0YHt9-2bVJmdEktLVU3NXc/edit>`_.
 
 
