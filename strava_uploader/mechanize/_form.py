@@ -1160,7 +1160,7 @@ class Control:
 
     def get_labels(self):
         """Return all labels (Label instances) for this control.
-        
+
         If the control was surrounded by a <label> tag, that will be the first
         label; all other labels, connected by 'for' and 'id', are in the order
         that appear in the HTML.
@@ -1341,20 +1341,16 @@ class FileControl(ScalarControl):
             fh.write(file_object.read())
         else:
             # multiple files
-            mw2 = mw.nextpart()
-            disp = 'form-data; name="%s"' % self.name
-            mw2.addheader("Content-Disposition", disp, prefix=1)
-            fh = mw2.startmultipartbody("mixed", prefix=0)
             for file_object, content_type, filename in self._upload_data:
-                mw3 = mw2.nextpart()
+                mw2 = mw.nextpart()
                 if filename is None:
                     filename = ""
                 fn_part = '; filename="%s"' % filename
-                disp = "file%s" % fn_part
-                mw3.addheader("Content-Disposition", disp, prefix=1)
-                fh2 = mw3.startbody(content_type, prefix=0)
-                fh2.write(file_object.read())
-            mw2.lastpart()
+                disp = 'form-data; name="%s"%s' % (self.name, fn_part)
+                mw2.addheader("Content-Disposition", disp, prefix=1)
+                fh = mw2.startbody(content_type, prefix=0)
+                fh.write(file_object.read())
+
 
     def __str__(self):
         name = self.name
@@ -1507,12 +1503,12 @@ class Item:
 
     def get_labels(self):
         """Return all labels (Label instances) for this item.
-        
+
         For items that represent radio buttons or checkboxes, if the item was
         surrounded by a <label> tag, that will be the first label; all other
         labels, connected by 'for' and 'id', are in the order that appear in
         the HTML.
-        
+
         For items that represent select options, if the option had a label
         attribute, that will be the first label.  If the option has contents
         (text within the option tags) and it is not the same as the label
@@ -1821,9 +1817,9 @@ class ListControl(Control):
 
     def toggle_single(self, by_label=None):
         """Deprecated: toggle the selection of the single item in this control.
-        
+
         Raises ItemCountError if the control does not contain only one item.
-        
+
         by_label argument is ignored, and included only for backwards
         compatibility.
 
@@ -1838,9 +1834,9 @@ class ListControl(Control):
 
     def set_single(self, selected, by_label=None):
         """Deprecated: set the selection of the single item in this control.
-        
+
         Raises ItemCountError if the control does not contain only one item.
-        
+
         by_label argument is ignored, and included only for backwards
         compatibility.
 
@@ -1952,8 +1948,8 @@ class ListControl(Control):
         # RFC 1866 if the _select_default attribute is set, and Netscape and IE
         # otherwise.  RFC 1866 and HTML 4 are always violated insofar as you
         # can deselect all items in a RadioControl.
-        
-        for o in self.items: 
+
+        for o in self.items:
             # set items' controls to self, now that we've merged
             o.__dict__["_control"] = self
 
@@ -2282,7 +2278,7 @@ class SelectControl(ListControl):
             o = Item(self, attrs, index)
             o.__dict__["_selected"] = attrs.has_key("selected")
             # add 'label' label and contents label, if different.  If both are
-            # provided, the 'label' label is used for display in HTML 
+            # provided, the 'label' label is used for display in HTML
             # 4.0-compliant browsers (and any lower spec? not sure) while the
             # contents are used for display in older or less-compliant
             # browsers.  We make label objects for both, if the values are
@@ -2688,7 +2684,7 @@ class HTMLForm:
             value = bool(value)
             for cc in self.controls:
                 try:
-                    items = cc.items 
+                    items = cc.items
                 except AttributeError:
                     continue
                 else:
@@ -3104,14 +3100,14 @@ class HTMLForm:
 # Private methods.
 
     def _find_list_control(self,
-                           name=None, type=None, kind=None, id=None, 
+                           name=None, type=None, kind=None, id=None,
                            label=None, nr=None):
         if ((name is None) and (type is None) and (kind is None) and
             (id is None) and (label is None) and (nr is None)):
             raise ValueError(
                 "at least one argument must be supplied to specify control")
 
-        return self._find_control(name, type, kind, id, label, 
+        return self._find_control(name, type, kind, id, label,
                                   is_listcontrol, nr)
 
     def _find_control(self, name, type, kind, id, label, predicate, nr):
